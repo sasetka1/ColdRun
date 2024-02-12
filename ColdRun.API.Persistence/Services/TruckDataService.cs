@@ -5,6 +5,8 @@ using Microsoft.Extensions.Logging;
 using OperationResult;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using System.Globalization;
+using System.Net.NetworkInformation;
 using System.Xml.Serialization;
 using static OperationResult.Helpers;
 
@@ -14,6 +16,7 @@ namespace ColdRun.API.Persistence.Services
     {
         private readonly ILogger<TruckDataService> _logger;
         private readonly ColdRunDbContext _coldRunDbContext;
+
 
 
         public TruckDataService(ILogger<TruckDataService> logger, ColdRunDbContext coldRunDbContext)
@@ -75,8 +78,11 @@ namespace ColdRun.API.Persistence.Services
 
         public async Task<Result<Truck?, string>> Get(string code)
         {
+            CultureInfo originalCulture = CultureInfo.CurrentCulture;
+            CultureInfo.CurrentCulture = new CultureInfo("en-US");
             try
             {
+
                 var result = await _coldRunDbContext.Trucks.FirstOrDefaultAsync();
                 return Ok(result);
             }
@@ -88,11 +94,41 @@ namespace ColdRun.API.Persistence.Services
 
                 return Error(message);
             }
+            finally
+            {
+                CultureInfo.CurrentCulture = originalCulture;
+            }
         }
 
-        public Task<Result<IEnumerable<Truck>, string>> GetAll(int pageNumber = 1, int pageSize = int.MaxValue)
+        public async Task<Result<IEnumerable<Truck>, string>> GetAll(string? name = null, string? status = null , string? sortBy = null)
         {
-            throw new NotImplementedException();
+            var query = _coldRunDbContext.Trucks.AsQueryable();
+
+            if (!string.IsNullOrEmpty(status))
+            {
+                query = query.Where(t => t.Status == status);
+            }
+
+            if (!string.IsNullOrEmpty(status))
+            {
+                query = query.Where(t => t.Name == name);
+            }
+
+            switch (sortBy?.ToLower())
+            {
+                case "code":
+                    query = query.OrderBy(t => t.Code);
+                    break;
+                case "name":
+                    query = query.OrderBy(t => t.Name);
+                    break;
+                default:
+                    // Default sorting logic
+                    query = query.OrderBy(t => t.Name);
+                    break;
+            }
+
+            return await query.ToListAsync();
         }
 
         public async Task<Status<string>> Update(Truck truck)

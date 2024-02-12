@@ -56,7 +56,7 @@ namespace ColdRun.API.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         //  [MapToApiVersion(Constants.Version)]
         //  [SwaggerResponseExample(200, typeof(TrucksExample))]
-        public async Task<ActionResult<IEnumerable<Truck>>> GetAll([ FromQuery] string name, [FromQuery] int pageNumber, [FromQuery] int pageSize)
+        public async Task<ActionResult<IEnumerable<Truck>>> GetAll([ FromQuery] string? name = null, [FromQuery] string? status = null, [FromQuery] string? sortBy = null, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = int.MaxValue)
         {
             if (pageNumber <= 0)
                 return BadRequest("pageNumber must be a number larger than 0");
@@ -64,16 +64,15 @@ namespace ColdRun.API.Controllers
             if (pageSize <= 0)
                 return BadRequest("pageSize must be a number larger than 0");
 
-            var result = await _truckService.GetAll(pageNumber, pageSize);
+            var result = await _truckService.GetAll(name, status, sortBy,pageNumber, pageSize);
 
-            if (result.IsSuccess)
-            {
-                return result.Value == null
+          
+             return result.HasValue == false
                     ? NotFound("Not found")
-                    : Ok(result.Value);
-            }
+                    : Ok(result.Value.Value);
+         
 
-            return BadRequest(result.Error);
+            return BadRequest(result.Value.Error);
         }
 
 
@@ -112,7 +111,7 @@ namespace ColdRun.API.Controllers
         [ProducesResponseType(typeof(PagedList<Truck>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Delete([FromQuery]string code)
+        public async Task<IActionResult> Delete(string code)
         {
             var result = await _truckService.Delete(code);
 

@@ -5,7 +5,7 @@ namespace ColdRun.API.Persistence.Services.Interfaces
 {
     public interface ITruckDataService
     {
-        Task<Result<IEnumerable<Truck>, string>> GetAll(int pageNumber = 1, int pageSize = int.MaxValue);
+        Task<Result<IEnumerable<Truck>, string>> GetAll(string? name = null, string? status = null, string? sortBy = null);
 
         /// <summary>
         /// Returns a single Truck by code, if it exists, Otherwise returns null

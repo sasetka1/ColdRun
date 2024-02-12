@@ -4,7 +4,7 @@ namespace ColdRun.API.Extension
 {
     public static class TruckStatusExtension
     {
-        private static bool IsValidStatusTransition(this TruckStatus currentStatus, TruckStatus newStatus)
+        public static bool IsValidStatusTransition(this TruckStatus currentStatus, TruckStatus newStatus)
         {
             switch (newStatus)
             {
