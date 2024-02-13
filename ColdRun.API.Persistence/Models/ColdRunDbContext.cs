@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Azure.Core.HttpHeader;
 
 namespace ColdRun.API.Persistence.Models
 {
@@ -22,7 +23,8 @@ namespace ColdRun.API.Persistence.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Data Source=localhost\\SQLEXPRESS;Initial Catalog=ColdRunDb;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
+                var connectionString = _configuration.GetConnectionString(Constants.DatabaseConnection.ColdRunConnection);
+                optionsBuilder.UseSqlServer(connectionString);
             }
         }
     }

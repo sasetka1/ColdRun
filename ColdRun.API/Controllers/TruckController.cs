@@ -21,6 +21,31 @@ namespace ColdRun.API.Controllers
             _logger = logger;
             _truckService = truckService;
         }
+
+        [HttpGet]
+        [Route("GetAll")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(PagedList<Truck>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        //  [MapToApiVersion(Constants.Version)]
+        //  [SwaggerResponseExample(200, typeof(TrucksExample))]
+        public async Task<ActionResult<IEnumerable<Truck>>> GetAll([FromQuery] string? name = null, [FromQuery] string? code = null, [FromQuery] string? sortBy = null, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = int.MaxValue)
+        {
+            if (pageNumber <= 0)
+                return BadRequest("pageNumber must be a number larger than 0");
+
+            if (pageSize <= 0)
+                return BadRequest("pageSize must be a number larger than 0");
+
+            var result = await _truckService.GetAll(name, code, sortBy, pageNumber, pageSize);
+
+
+            return result.HasValue == false
+                   ? NotFound("Not found")
+                   : (result.Value.IsSuccess ? Ok(result.Value.Value) : BadRequest(result.Value.Error));
+        }
+
         [HttpGet]
         [Route("Get/{code}")]
         [Produces("application/json")]
@@ -46,29 +71,7 @@ namespace ColdRun.API.Controllers
             return BadRequest(result.Error);
         }
 
-        [HttpGet]
-        [Route("GetAll")]       
-        [Produces("application/json")]
-        [ProducesResponseType(typeof(PagedList<Truck>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
-        //  [MapToApiVersion(Constants.Version)]
-        //  [SwaggerResponseExample(200, typeof(TrucksExample))]
-        public async Task<ActionResult<IEnumerable<Truck>>> GetAll([ FromQuery] string? name = null, [FromQuery] string? code = null, [FromQuery] string? sortBy = null, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = int.MaxValue)
-        {
-            if (pageNumber <= 0)
-                return BadRequest("pageNumber must be a number larger than 0");
 
-            if (pageSize <= 0)
-                return BadRequest("pageSize must be a number larger than 0");
-
-            var result = await _truckService.GetAll(name, code, sortBy,pageNumber, pageSize);
-
-          
-             return result.HasValue == false
-                    ? NotFound("Not found")
-                    : (result.Value.IsSuccess ? Ok(result.Value.Value) : BadRequest(result.Value.Error));
-        }
 
 
         [HttpPost]
@@ -90,6 +93,7 @@ namespace ColdRun.API.Controllers
         [ProducesResponseType(typeof(Status<string>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+       //[SwaggerResponseExample(200, typeof(TruckExample))]
         public async Task<IActionResult> Update([FromBody] Truck truck)
         {
             var result = await _truckService.Update(truck);

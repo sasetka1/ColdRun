@@ -11,7 +11,8 @@ namespace ColdRun.API.Persistence.Extension
     {
         public static IServiceCollection RegisterPersistenceDependencies(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<ColdRunDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("ColdRunDb")));
+            var connectionString = configuration.GetConnectionString(Constants.DatabaseConnection.ColdRunConnection);
+            services.AddDbContext<ColdRunDbContext>(options => options.UseSqlServer(connectionString));
             services.AddScoped<ITruckDataService, TruckDataService>();
 
             return services;
