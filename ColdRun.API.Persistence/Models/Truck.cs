@@ -12,13 +12,13 @@ namespace ColdRun.API.Persistence.Models
         [Key]
         [Required]
         [MaxLength(30)]
-        public string? Code { get; set; }
+        public string Code { get; set; }
         [Required]
         [MaxLength(100)]
-        public string? Name { get; set; }
+        public string Name { get; set; }
         [Required]
         [MaxLength(100)]
-        public string? Status { get; set; }
+        public string Status { get; set; }
         public string? Description { get; set; }
     }
 }

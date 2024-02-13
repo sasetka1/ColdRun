@@ -78,12 +78,14 @@ namespace ColdRun.API.Persistence.Services
 
         public async Task<Result<Truck?, string>> Get(string code)
         {
-            CultureInfo originalCulture = CultureInfo.CurrentCulture;
-            CultureInfo.CurrentCulture = new CultureInfo("en-US");
             try
             {
 
-                var result = await _coldRunDbContext.Trucks.FirstOrDefaultAsync();
+                var result = await _coldRunDbContext.Trucks.FirstOrDefaultAsync(x=> x.Code == code);
+                if (result != null)
+                {
+                    _coldRunDbContext.Entry(result).State = EntityState.Detached;
+                }
                 return Ok(result);
             }
             catch (Exception ex)
@@ -94,24 +96,20 @@ namespace ColdRun.API.Persistence.Services
 
                 return Error(message);
             }
-            finally
-            {
-                CultureInfo.CurrentCulture = originalCulture;
-            }
         }
 
-        public async Task<Result<IEnumerable<Truck>, string>> GetAll(string? name = null, string? status = null , string? sortBy = null)
+        public async Task<Result<IEnumerable<Truck>, string>> GetAll(string? name = null, string? code = null , string? sortBy = null)
         {
             var query = _coldRunDbContext.Trucks.AsQueryable();
 
-            if (!string.IsNullOrEmpty(status))
+            if (!string.IsNullOrEmpty(code))
             {
-                query = query.Where(t => t.Status == status);
+                query = query.Where(t => t.Code.Contains(code));
             }
 
-            if (!string.IsNullOrEmpty(status))
+            if (!string.IsNullOrEmpty(name))
             {
-                query = query.Where(t => t.Name == name);
+                query = query.Where(t => t.Name.Contains(name));
             }
 
             switch (sortBy?.ToLower())
@@ -121,6 +119,9 @@ namespace ColdRun.API.Persistence.Services
                     break;
                 case "name":
                     query = query.OrderBy(t => t.Name);
+                    break;
+                case "status":
+                    query = query.OrderBy(t => t.Status);
                     break;
                 default:
                     // Default sorting logic

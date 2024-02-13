@@ -54,7 +54,7 @@ namespace ColdRun.API.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         //  [MapToApiVersion(Constants.Version)]
         //  [SwaggerResponseExample(200, typeof(TrucksExample))]
-        public async Task<ActionResult<IEnumerable<Truck>>> GetAll([ FromQuery] string? name = null, [FromQuery] string? status = null, [FromQuery] string? sortBy = null, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = int.MaxValue)
+        public async Task<ActionResult<IEnumerable<Truck>>> GetAll([ FromQuery] string? name = null, [FromQuery] string? code = null, [FromQuery] string? sortBy = null, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = int.MaxValue)
         {
             if (pageNumber <= 0)
                 return BadRequest("pageNumber must be a number larger than 0");
@@ -62,7 +62,7 @@ namespace ColdRun.API.Controllers
             if (pageSize <= 0)
                 return BadRequest("pageSize must be a number larger than 0");
 
-            var result = await _truckService.GetAll(name, status, sortBy,pageNumber, pageSize);
+            var result = await _truckService.GetAll(name, code, sortBy,pageNumber, pageSize);
 
           
              return result.HasValue == false
