@@ -8,8 +8,14 @@ namespace ColdRun.API.Services
 {
     public class TruckValidatorService : IDataValidatorService<Truck, Truck>
     {
-        public bool ValidateEntity( Truck currentEntity, Truck newEntity)
+        public bool ValidateEntity( Truck? currentEntity, Truck newEntity)
         {
+            //create truck
+            if(currentEntity == null)
+            {
+                return TruckStatus.OutOfService.IsValidStatusTransition(newEntity.Status);
+            }
+
            return currentEntity.Status.IsValidStatusTransition(newEntity.Status);
         }
 

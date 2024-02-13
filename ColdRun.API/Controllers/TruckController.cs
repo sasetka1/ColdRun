@@ -1,9 +1,7 @@
 using ColdRun.API.Models;
 using ColdRun.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.VisualBasic;
-using System.Diagnostics.Metrics;
+using OperationResult;
 
 namespace ColdRun.API.Controllers
 {
@@ -69,15 +67,12 @@ namespace ColdRun.API.Controllers
           
              return result.HasValue == false
                     ? NotFound("Not found")
-                    : Ok(result.Value.Value);
-         
-
-            return BadRequest(result.Value.Error);
+                    : (result.Value.IsSuccess ? Ok(result.Value.Value) : BadRequest(result.Value.Error));
         }
 
 
         [HttpPost]
-        [ProducesResponseType(typeof(PagedList<Truck>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Status<string>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromBody] Truck truck)
         {
@@ -92,7 +87,7 @@ namespace ColdRun.API.Controllers
         }
 
         [HttpPut]
-        [ProducesResponseType(typeof(PagedList<Truck>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Status<string>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Update([FromBody] Truck truck)
@@ -108,7 +103,7 @@ namespace ColdRun.API.Controllers
         }
 
         [HttpDelete("{code}")]
-        [ProducesResponseType(typeof(PagedList<Truck>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Status<string>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(string code)

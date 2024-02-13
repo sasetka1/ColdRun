@@ -11,22 +11,29 @@ namespace ColdRun.API.Services
 {
     public class TruckService : ITruckService
     {
-        //private readonly IDataValidatorService<Truck> _validatorService;
         private readonly IMapper<Persistence.Models.Truck, Truck> _truckMapper;
         private readonly IMapper<Truck, Persistence.Models.Truck> _truckToEFMapper;
         private readonly ITruckDataService _dataService;
         private readonly IDataValidatorService<Truck, Truck> _validatorService;
-        public TruckService(IMapper<Persistence.Models.Truck, Truck> truckMapper, IMapper<Truck, Persistence.Models.Truck> truckToEFMapper, ITruckDataService dataService)
+        public TruckService(IMapper<Persistence.Models.Truck, Truck> truckMapper, IMapper<Truck, Persistence.Models.Truck> truckToEFMapper, ITruckDataService dataService, IDataValidatorService<Truck, Truck> validatorService)
         {
             _truckMapper = truckMapper;
             _truckToEFMapper = truckToEFMapper;
             _dataService = dataService;
+            _validatorService = validatorService;
         }
 
         public async Task<Status<string>> Create(Truck truck)
         {
             try
             {
+                var isValid = _validatorService.ValidateEntity(null, truck);
+
+                if (isValid == false)
+                {
+                    return Error($"The status:{truck.Status} is not possible.");
+                }
+
                 var mapTruck = _truckToEFMapper.Map(truck);
                 return await _dataService.Create(mapTruck);
             }
@@ -82,7 +89,7 @@ namespace ColdRun.API.Services
 
         }
 
-        public async Task<Result<PagedList<Truck?>, string>?> GetAll(string name, string status, string sortBy, int pageNumber = 1, int pageSize = int.MaxValue)
+        public async Task<Result<PagedList<Truck>, string>?> GetAll(string? name, string? status, string? sortBy, int pageNumber = 1, int pageSize = int.MaxValue)
         {
             try
             {

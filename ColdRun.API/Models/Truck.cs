@@ -9,7 +9,7 @@ namespace ColdRun.API.Models
         [Required]
         public string Name { get; set; } = string.Empty;
         [Required]
-        public TruckStatus Status { get; set; }
+        public TruckStatus Status { get; set; } = TruckStatus.OutOfService;
         public string? Description { get; set; }
     }
 }

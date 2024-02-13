@@ -6,7 +6,7 @@ namespace ColdRun.API.Services.Interfaces
 {
     public interface ITruckService
     {
-        public Task<Result<PagedList<Truck?>, string>?> GetAll(string name, string status, string sortBy, int pageNumber = 1, int pageSize = int.MaxValue);
+        public Task<Result<PagedList<Truck>, string>?> GetAll(string? name, string? status, string? sortBy, int pageNumber = 1, int pageSize = int.MaxValue);
 
         /// <summary>
         /// Returns a single Truck by code, if it exists, Otherwise returns null
