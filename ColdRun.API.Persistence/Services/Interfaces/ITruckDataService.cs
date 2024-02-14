@@ -14,7 +14,7 @@ namespace ColdRun.API.Persistence.Services.Interfaces
         /// <returns></returns>
         Task<Result<Truck?, string>> Get(string code);
         Task<Status<string>> Update(Truck truck);
-        Task<Status<string>> Delete(string code);
+        Task<Status<string>?> Delete(string code);
         Task<Status<string>> Create(Truck truck);
 
     }

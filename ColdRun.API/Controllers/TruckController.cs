@@ -1,7 +1,9 @@
 using ColdRun.API.Models;
+using ColdRun.API.Persistence.Models;
 using ColdRun.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using OperationResult;
+using Truck = ColdRun.API.Models.Truck;
 
 namespace ColdRun.API.Controllers
 {
@@ -23,7 +25,6 @@ namespace ColdRun.API.Controllers
         }
 
         [HttpGet]
-        [Route("GetAll")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(PagedList<Truck>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
@@ -46,8 +47,7 @@ namespace ColdRun.API.Controllers
                    : (result.Value.IsSuccess ? Ok(result.Value.Value) : BadRequest(result.Value.Error));
         }
 
-        [HttpGet]
-        [Route("Get/{code}")]
+        [HttpGet("{code}")]      
         [Produces("application/json")]
         [ProducesResponseType(typeof(Truck), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
@@ -98,12 +98,17 @@ namespace ColdRun.API.Controllers
         {
             var result = await _truckService.Update(truck);
 
-            if (result.IsSuccess)
+            if(result.HasValue == false)
+            {
+                return NotFound($"Truck whith code:{truck.Code} not found.");
+            }
+
+            if (result.Value.IsSuccess)
             {
                 return Ok(result);
             }
 
-            return BadRequest(result.Error);
+            return BadRequest(result.Value.Error);
         }
 
         [HttpDelete("{code}")]
@@ -114,12 +119,17 @@ namespace ColdRun.API.Controllers
         {
             var result = await _truckService.Delete(code);
 
-            if (result.IsSuccess)
+            if (result.HasValue == false)
+            {
+                return NotFound($"Truck whith code:{code} not found.");
+            }
+
+            if (result.Value.IsSuccess)
             {
                 return Ok(result);
             }
 
-            return BadRequest(result.Error);
+            return BadRequest(result.Value.Error);
         }
     }
 }

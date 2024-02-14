@@ -51,14 +51,14 @@ namespace ColdRun.API.Persistence.Services
         }
         
 
-        public async Task<Status<string>> Delete(string code)
+        public async Task<Status<string>?> Delete(string code)
         {
             try
             {
                 var remove = await _coldRunDbContext.Trucks.Where(x => x.Code == code).FirstOrDefaultAsync();
                 if (remove is null)
                 {
-                    return Error("The code not exist");
+                    return null;
                 }
 
  
@@ -136,7 +136,7 @@ namespace ColdRun.API.Persistence.Services
         {
             try
             {
-                // Validate if the code is unique
+                // Validate if the code exist
                 if (await _coldRunDbContext.Trucks.AnyAsync(t => t.Code == truck.Code) == false)
                 {
                     return Error("The code not exist");

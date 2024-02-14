@@ -45,14 +45,19 @@ namespace ColdRun.API.Services
 
         }
 
-        public async Task<Status<string>> Delete(string code)
+        public async Task<Status<string>?> Delete(string code)
         {
             try
             {
                 var truckResult = await _dataService.Delete(code);
 
-                if (truckResult.IsError)
-                    throw new DataException(truckResult.Error);
+                if (truckResult.HasValue == false)
+                {
+                    return null;
+                }
+
+                if (truckResult.Value.IsError)
+                    throw new DataException(truckResult.Value.Error);
 
                 return Ok();
 
@@ -127,7 +132,7 @@ namespace ColdRun.API.Services
 
         }
 
-        public async Task<Status<string>> Update(Truck truck)
+        public async Task<Status<string>?> Update(Truck truck)
         {
             try
             {      
@@ -137,6 +142,11 @@ namespace ColdRun.API.Services
                 if(currentTruck.IsError)
                 {
                     return Error(currentTruck.Error);
+                }
+
+                if (currentTruck.Value == null)
+                {
+                    return null;
                 }
 
                 var isValid = _validatorService.ValidateEntity(currentTruck.Value, truck);

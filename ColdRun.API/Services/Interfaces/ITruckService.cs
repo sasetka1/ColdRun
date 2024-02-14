@@ -14,8 +14,8 @@ namespace ColdRun.API.Services.Interfaces
         /// <param name="code"></param>
         /// <returns></returns>
         public Task<Result<Truck?, string>> Get(string code);
-        public Task<Status<string>> Update(Truck truck);
-        public Task<Status<string>> Delete(string code);
+        public Task<Status<string>?> Update(Truck truck);
+        public Task<Status<string>?> Delete(string code);
         public Task<Status<string>> Create(Truck truck);
 
 
