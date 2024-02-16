@@ -23,6 +23,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// Initialize database (sync)
+app.Services.UseDatabaseInitializer(builder.Configuration);
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
